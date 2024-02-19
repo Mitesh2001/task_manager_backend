@@ -14,7 +14,7 @@ export class Task extends Document {
     status: string;
 
     @Prop({ type: Date })
-    due_date: Date
+    dueDate: Date
 
     @Prop({ type: Date, default: Date.now })
     creationDate: Date
