@@ -36,3 +36,34 @@ export class TaskCreateDto {
     @IsOptional()
     readonly comments?: { text: string, date: string }[];
 }
+
+export class TaskUpdateDto {
+
+    @IsString()
+    @IsOptional()
+    readonly title?: string;
+
+    @IsOptional()
+    @IsString()
+    readonly description?: string;
+
+    @IsEnum(TaskStatus)
+    @IsOptional()
+    readonly status?: string;
+
+    @IsOptional()
+    @IsISO8601({ strict: true })
+    readonly dueDate?: Date;
+
+    @IsOptional()
+    @IsISO8601({ strict: true })
+    readonly creationDate?: string;
+
+    @IsOptional()
+    @IsISO8601({ strict: true })
+    readonly lastUpdatedDate?: string;
+
+    @IsArray()
+    @IsOptional()
+    readonly comments?: { text: string, date: string }[];
+}
