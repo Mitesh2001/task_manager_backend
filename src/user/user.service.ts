@@ -18,4 +18,12 @@ export class UserService {
         return this.userModel.find();
     }
 
+    findOne = async (userName: string): Promise<User | undefined> => {
+        const user = await this.userModel.findOne({ "username": userName });
+        if (!user) {
+            return undefined
+        }
+        return user;
+    }
+
 }
