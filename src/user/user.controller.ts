@@ -17,4 +17,9 @@ export class UserController {
         return this.userService.getAllUsers();
     }
 
+    @Get('find')
+    async findOne(@Body() { username }: { username: string }): Promise<User> {
+        return this.userService.findOne(username);
+    }
+
 }
