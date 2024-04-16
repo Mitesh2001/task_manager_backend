@@ -17,8 +17,8 @@ export class TaskController {
     }
 
     @Get()
-    async getAll(): Promise<CommonResponseDto> {
-        const tasks = await this.taskService.getAllTask();
+    async getAll(@Request() req: any): Promise<CommonResponseDto> {
+        const tasks = await this.taskService.getAllTask(req.user.id);
         return this.setResponse('success', tasks, "Tasks Fetched successfully !");
     }
 

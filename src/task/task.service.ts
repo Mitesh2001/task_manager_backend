@@ -19,6 +19,7 @@ export class TaskService {
         if (!user)
             throw new NotFoundException(`User with ID ${assignTo} not found`);
         else {
+            console.log(user.id);
             taskCreate.assignedTo = user.id;
         }
         const savedTask = await taskCreate.save();
@@ -28,8 +29,9 @@ export class TaskService {
         return savedTask;
     }
 
-    getAllTask = async (): Promise<Task[]> => {
-        return this.taskModel.find();
+    getAllTask = async (assignedTo: string): Promise<Task[]> => {
+        const tasks = await this.taskModel.find({ assignedTo }).exec();
+        return tasks;
     }
 
     getById = async (taskId: string): Promise<Task> => {
