@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Date, Document } from "mongoose";
+import mongoose, { Date, Document } from "mongoose";
+import { User } from "src/user/user.entity";
 
 @Schema({ versionKey: false })
 export class Task extends Document {
@@ -24,6 +25,9 @@ export class Task extends Document {
 
     @Prop([{ text: String, date: { type: Date, default: Date.now } }])
     comments: { text: string; date: Date }[]
+
+    @Prop({ type: mongoose.Types.ObjectId, ref: "User" })
+    assignedTo: string;
 
 }
 
