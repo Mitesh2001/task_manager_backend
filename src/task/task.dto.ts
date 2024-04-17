@@ -23,18 +23,6 @@ export class TaskCreateDto {
     @IsOptional()
     @IsISO8601({ strict: true })
     readonly dueDate?: Date;
-
-    @IsOptional()
-    @IsISO8601({ strict: true })
-    readonly creationDate?: string;
-
-    @IsOptional()
-    @IsISO8601({ strict: true })
-    readonly lastUpdatedDate?: string;
-
-    @IsArray()
-    @IsOptional()
-    readonly comments?: { text: string, date: string }[];
 }
 
 export class TaskUpdateDto {
@@ -54,16 +42,4 @@ export class TaskUpdateDto {
     @IsOptional()
     @IsISO8601({ strict: true })
     readonly dueDate?: Date;
-
-    @IsOptional()
-    @IsISO8601({ strict: true })
-    readonly creationDate?: string;
-
-    @IsOptional()
-    @IsISO8601({ strict: true })
-    readonly lastUpdatedDate?: string;
-
-    @IsArray()
-    @IsOptional()
-    readonly comments?: { text: string, date: string }[];
 }

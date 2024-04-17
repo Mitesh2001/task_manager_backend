@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { Document } from "mongoose";
 import { Task } from "src/task/task.schema";
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, timestamps: true })
 export class User extends Document {
 
     @Prop({ required: true })
