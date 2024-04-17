@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { TaskCreateDto, TaskUpdateDto } from './task.dto';
 import { CommonResponseDto } from 'src/common-response.dto';
@@ -11,14 +11,14 @@ export class TaskController {
     constructor(private readonly taskService: TaskService) { }
 
     @Post()
-    async create(@Body() task: TaskCreateDto): Promise<CommonResponseDto> {
-        const createdTask = await this.taskService.create(task);
+    async create(@Body() task: TaskCreateDto, @Request() req: any): Promise<CommonResponseDto> {
+        const createdTask = await this.taskService.create(task, req.user.id);
         return this.setResponse('success', createdTask, "Task Fetched successfully !");
     }
 
     @Get()
-    async getAll(): Promise<CommonResponseDto> {
-        const tasks = await this.taskService.getAllTask();
+    async getAll(@Request() req: any): Promise<CommonResponseDto> {
+        const tasks = await this.taskService.getAllTask(req.user.id);
         return this.setResponse('success', tasks, "Tasks Fetched successfully !");
     }
 

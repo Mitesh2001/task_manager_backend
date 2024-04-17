@@ -11,9 +11,9 @@ export class AuthService {
         private JwtService: JwtService
     ) { }
 
-    signIn = async (username: string, pass: string): Promise<any> => {
+    signIn = async (email: string, pass: string): Promise<any> => {
 
-        const user = await this.userService.findOne(username);
+        const user = await this.userService.findByEmail(email);
 
         if (!user) throw new ForbiddenException("User not found !");
 
@@ -23,7 +23,7 @@ export class AuthService {
             throw new UnauthorizedException();
         }
 
-        const payload = { id: user.id, username, email: user.email }
+        const payload = { id: user.id, email: user.email }
 
         return {
             access_token: await this.JwtService.signAsync(payload)

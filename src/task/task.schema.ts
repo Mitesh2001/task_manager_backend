@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Date, Document } from "mongoose";
+import mongoose, { Date, Document } from "mongoose";
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, timestamps: true })
 export class Task extends Document {
 
     @Prop({ required: true })
@@ -16,14 +16,8 @@ export class Task extends Document {
     @Prop({ type: Date })
     dueDate: Date
 
-    @Prop({ type: Date, default: Date.now })
-    creationDate: Date
-
-    @Prop({ type: Date, default: Date.now })
-    lastUpdatedDate: Date
-
-    @Prop([{ text: String, date: { type: Date, default: Date.now } }])
-    comments: { text: string; date: Date }[]
+    @Prop({ type: mongoose.Types.ObjectId, ref: "User" })
+    assignedTo: string;
 
 }
 
