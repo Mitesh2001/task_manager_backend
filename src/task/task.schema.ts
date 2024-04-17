@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { Date, Document } from "mongoose";
-import { User } from "src/user/user.entity";
 
 @Schema({ versionKey: false })
 export class Task extends Document {

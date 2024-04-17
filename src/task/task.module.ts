@@ -4,7 +4,7 @@ import { TaskController } from './task.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Task, TaskSchema } from './task.schema';
 import { JwtModule } from '@nestjs/jwt';
-import { User, UserSchema } from 'src/user/user.entity';
+import { User, UserSchema } from 'src/user/user.schema';
 
 @Module({
   imports: [
