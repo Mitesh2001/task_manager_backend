@@ -21,6 +21,9 @@ export class Task extends Document {
   @Prop({ type: Date })
   dueDate: Date;
 
+  @Prop({ default: null, required: false })
+  media: String;
+
   @Prop({ type: mongoose.Types.ObjectId, ref: 'User' })
   assignedTo: string;
 }

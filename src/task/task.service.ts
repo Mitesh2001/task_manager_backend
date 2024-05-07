@@ -12,10 +12,15 @@ export class TaskService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  create = async (task: TaskCreateDto, assignTo: string): Promise<Task> => {
+  create = async (
+    task: TaskCreateDto,
+    assignTo: string,
+    image: Express.Multer.File,
+  ): Promise<Task> => {
     const taskCreate = new this.taskModel({
       ...task,
       status: task.status ?? TaskStatus.TO_DO,
+      media: image ? image.path : null,
     });
     const user = await this.userModel.findById(assignTo);
     if (!user)

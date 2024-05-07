@@ -7,12 +7,17 @@ import {
   Post,
   Put,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { TaskCreateDto, TaskUpdateDto } from './task.dto';
 import { CommonResponseDto } from 'src/common-response.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
+import { diskStorage } from 'multer';
 
 @UseGuards(AuthGuard)
 @Controller('task')
@@ -20,11 +25,27 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: 'public/task_media',
+        filename: (req, file, callback) => {
+          callback(null, `${Date.now()}-${file.originalname}`);
+        },
+      }),
+    }),
+  )
   async create(
-    @Body() task: TaskCreateDto,
+    @UploadedFile() image: Express.Multer.File,
+    @Body()
+    task: TaskCreateDto,
     @Request() req: any,
-  ): Promise<CommonResponseDto> {
-    const createdTask = await this.taskService.create(task, req.user.id);
+  ): Promise<unknown> {
+    const createdTask = await this.taskService.create(
+      { ...task },
+      req.user.id,
+      image,
+    );
     return this.setResponse(
       'success',
       createdTask,
