@@ -29,7 +29,6 @@ export const saveImageToStorage: MulterOptions = {
 export const removeFile = (filePath: string) => {
   try {
     unlink(filePath, (err) => {
-      if (err) throw err;
       console.log(`${filePath} was deleted`);
     });
   } catch (error) {
