@@ -2,6 +2,7 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 import { diskStorage } from 'multer';
 import * as path from 'path';
 import { v4 as uuid4 } from 'uuid';
+const fs = require('fs');
 
 const validFileExtensions: string[] = ['png', 'jpg', 'jpeg'];
 const validMimeTypes: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
@@ -18,9 +19,17 @@ export const saveImageToStorage: MulterOptions = {
   fileFilter: (req, file, callback) => {
     const allowedMimeTypes: string[] = validMimeTypes;
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      callback({ name: 'Bad Request', message: 'Invalid File!' }, false);
+      callback(null, false);
     } else {
       callback(null, true);
     }
   },
+};
+
+export const removeFile = (filePath: string) => {
+  try {
+    fs.unlink();
+  } catch (error) {
+    console.log('error', error.message);
+  }
 };
