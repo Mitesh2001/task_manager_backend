@@ -24,7 +24,7 @@ export class TaskCreateDto {
 
   @IsOptional()
   @IsString()
-  media: string;
+  imagePath: string;
 
   @IsNotEmpty()
   @IsISO8601({ strict: true })
@@ -46,7 +46,7 @@ export class TaskUpdateDto {
 
   @IsOptional()
   @IsString()
-  media: string;
+  imagePath: string;
 
   @IsOptional()
   @IsISO8601({ strict: true })

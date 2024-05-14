@@ -4,6 +4,7 @@ import { Task, TaskStatus } from './task.schema';
 import { Model } from 'mongoose';
 import { TaskCreateDto, TaskUpdateDto } from './task.dto';
 import { User } from 'src/user/user.schema';
+import { removeFile } from 'src/helper/image-storage';
 
 @Injectable()
 export class TaskService {
@@ -51,10 +52,20 @@ export class TaskService {
   updateById = async (
     taskId: string,
     taskDetails: TaskUpdateDto,
+    image?: Express.Multer.File,
   ): Promise<Task> => {
+    const newTaskDetails = {
+      ...taskDetails,
+      lastUpdatedDate: new Date().toISOString(),
+    };
+    if (image) {
+      const oldTaskDetails = await this.getById(taskId);
+      removeFile(oldTaskDetails.imagePath);
+      newTaskDetails.imagePath = image.path;
+    }
     const updatedTask = await this.taskModel.findByIdAndUpdate(
       taskId,
-      { ...taskDetails, lastUpdatedDate: new Date().toISOString() },
+      newTaskDetails,
       { new: true },
     );
     if (!updatedTask) {

@@ -22,7 +22,7 @@ export class Task extends Document {
   dueDate: Date;
 
   @Prop({ default: null, required: false })
-  imagePath: String;
+  imagePath: string;
 
   @Prop({ type: mongoose.Types.ObjectId, ref: 'User' })
   assignedTo: string;

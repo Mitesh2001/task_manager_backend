@@ -58,11 +58,13 @@ export class TaskController {
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('file', saveImageToStorage))
   async updateById(
     @Param('id') id: string,
     @Body() task: TaskUpdateDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<CommonResponseDto> {
-    const updatedTask = await this.taskService.updateById(id, task);
+    const updatedTask = await this.taskService.updateById(id, task, file);
     return this.setResponse(
       'success',
       updatedTask,
