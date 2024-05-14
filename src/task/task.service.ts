@@ -75,6 +75,8 @@ export class TaskService {
   };
 
   deleteById = async (taskId: string): Promise<void> => {
+    const taskTaskDetails = await this.getById(taskId);
+    removeFile(taskTaskDetails.imagePath);
     this.taskModel.findByIdAndDelete(taskId).exec();
   };
 }
