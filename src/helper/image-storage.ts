@@ -17,9 +17,10 @@ export const saveImageToStorage: MulterOptions = {
   }),
   fileFilter: (req, file, callback) => {
     const allowedMimeTypes: string[] = validMimeTypes;
-    callback(
-      { name: 'Bad Request', message: 'Invalid File!' },
-      allowedMimeTypes.includes(file.mimetype),
-    );
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      callback({ name: 'Bad Request', message: 'Invalid File!' }, false);
+    } else {
+      callback(null, true);
+    }
   },
 };
