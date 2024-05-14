@@ -18,6 +18,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { saveImageToStorage } from 'src/helper/image-storage';
+import { join } from 'path';
 
 @UseGuards(AuthGuard)
 @Controller('task')
@@ -28,21 +29,20 @@ export class TaskController {
   @UseInterceptors(FileInterceptor('file', saveImageToStorage))
   async create(
     @UploadedFile() file: Express.Multer.File,
-    // @Body()
-    // task: TaskCreateDto,
+    @Body()
+    task: TaskCreateDto,
     @Request() req: any,
   ): Promise<unknown> {
-    return { imagePath: file };
-    // const createdTask = await this.taskService.create(
-    //   { ...task },
-    //   req.user.id,
-    //   imagePath,
-    // );
-    // return this.setResponse(
-    //   'success',
-    //   createdTask,
-    //   'Task Created successfully !',
-    // );
+    const createdTask = await this.taskService.create(
+      { ...task },
+      req.user.id,
+      file,
+    );
+    return this.setResponse(
+      'success',
+      createdTask,
+      'Task Created successfully !',
+    );
   }
 
   @Get()

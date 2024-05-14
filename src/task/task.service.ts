@@ -15,12 +15,12 @@ export class TaskService {
   create = async (
     task: TaskCreateDto,
     assignTo: string,
-    image: Express.Multer.File,
+    image?: Express.Multer.File,
   ): Promise<Task> => {
     const taskCreate = new this.taskModel({
       ...task,
       status: task.status ?? TaskStatus.TO_DO,
-      media: image ? image.path : null,
+      imagePath: image ? image.path : null,
     });
     const user = await this.userModel.findById(assignTo);
     if (!user)
