@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserResponse, createUserDto } from './user.dto';
+import { createUserDto } from './user.dto';
 import { User } from './user.schema';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtService } from '@nestjs/jwt';
