@@ -22,6 +22,10 @@ export class TaskCreateDto {
   @IsOptional()
   readonly status: string;
 
+  @IsOptional()
+  @IsString()
+  imagePath: string;
+
   @IsNotEmpty()
   @IsISO8601({ strict: true })
   readonly dueDate?: Date;
@@ -39,6 +43,10 @@ export class TaskUpdateDto {
   @IsEnum(TaskStatus)
   @IsOptional()
   readonly status?: string;
+
+  @IsOptional()
+  @IsString()
+  imagePath: string;
 
   @IsOptional()
   @IsISO8601({ strict: true })

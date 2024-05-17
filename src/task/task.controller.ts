@@ -7,12 +7,18 @@ import {
   Post,
   Put,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { TaskCreateDto, TaskUpdateDto } from './task.dto';
 import { CommonResponseDto } from 'src/common-response.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
+import { saveImageToStorage } from 'src/helper/image-storage';
+import { join } from 'path';
 
 @UseGuards(AuthGuard)
 @Controller('task')
@@ -20,11 +26,18 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('file', saveImageToStorage))
   async create(
-    @Body() task: TaskCreateDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Body()
+    task: TaskCreateDto,
     @Request() req: any,
-  ): Promise<CommonResponseDto> {
-    const createdTask = await this.taskService.create(task, req.user.id);
+  ): Promise<unknown> {
+    const createdTask = await this.taskService.create(
+      { ...task },
+      req.user.id,
+      file,
+    );
     return this.setResponse(
       'success',
       createdTask,
@@ -45,11 +58,13 @@ export class TaskController {
   }
 
   @Put(':id')
+  @UseInterceptors(FileInterceptor('file', saveImageToStorage))
   async updateById(
     @Param('id') id: string,
     @Body() task: TaskUpdateDto,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<CommonResponseDto> {
-    const updatedTask = await this.taskService.updateById(id, task);
+    const updatedTask = await this.taskService.updateById(id, task, file);
     return this.setResponse(
       'success',
       updatedTask,

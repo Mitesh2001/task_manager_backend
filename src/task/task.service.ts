@@ -4,6 +4,7 @@ import { Task, TaskStatus } from './task.schema';
 import { Model } from 'mongoose';
 import { TaskCreateDto, TaskUpdateDto } from './task.dto';
 import { User } from 'src/user/user.schema';
+import { removeFile } from 'src/helper/image-storage';
 
 @Injectable()
 export class TaskService {
@@ -12,10 +13,15 @@ export class TaskService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  create = async (task: TaskCreateDto, assignTo: string): Promise<Task> => {
+  create = async (
+    task: TaskCreateDto,
+    assignTo: string,
+    image?: Express.Multer.File,
+  ): Promise<Task> => {
     const taskCreate = new this.taskModel({
       ...task,
       status: task.status ?? TaskStatus.TO_DO,
+      imagePath: image ? image.path : null,
     });
     const user = await this.userModel.findById(assignTo);
     if (!user)
@@ -24,8 +30,6 @@ export class TaskService {
       taskCreate.assignedTo = user.id;
     }
     const savedTask = await taskCreate.save();
-    user.tasks.push(savedTask.id);
-    user.save();
 
     return savedTask;
   };
@@ -46,10 +50,20 @@ export class TaskService {
   updateById = async (
     taskId: string,
     taskDetails: TaskUpdateDto,
+    image?: Express.Multer.File,
   ): Promise<Task> => {
+    const newTaskDetails = {
+      ...taskDetails,
+      lastUpdatedDate: new Date().toISOString(),
+    };
+    if (image) {
+      const oldTaskDetails = await this.getById(taskId);
+      removeFile(oldTaskDetails.imagePath);
+      newTaskDetails.imagePath = image.path;
+    }
     const updatedTask = await this.taskModel.findByIdAndUpdate(
       taskId,
-      { ...taskDetails, lastUpdatedDate: new Date().toISOString() },
+      newTaskDetails,
       { new: true },
     );
     if (!updatedTask) {
@@ -59,6 +73,8 @@ export class TaskService {
   };
 
   deleteById = async (taskId: string): Promise<void> => {
+    const taskTaskDetails = await this.getById(taskId);
+    removeFile(taskTaskDetails.imagePath);
     this.taskModel.findByIdAndDelete(taskId).exec();
   };
 }

@@ -6,6 +6,8 @@ import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TaskModule } from './task/task.module';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -13,8 +15,12 @@ import { AuthModule } from './auth/auth.module';
     MongooseModule.forRoot(process.env.CONNECTION_STRING),
     UserModule,
     TaskModule,
-    AuthModule],
+    AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..'),
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
