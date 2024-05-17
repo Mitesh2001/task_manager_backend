@@ -30,8 +30,6 @@ export class TaskService {
       taskCreate.assignedTo = user.id;
     }
     const savedTask = await taskCreate.save();
-    user.tasks.push(savedTask.id);
-    user.save();
 
     return savedTask;
   };
