@@ -88,4 +88,24 @@ export class AuthService {
 
     }
 
+    refreshTokens = async (userId: User['id'], refreshToken: User['refreshToken']) => {
+
+        const user = await this.userService.findById(userId);
+
+        if (!user || !user.refreshToken)
+            throw new ForbiddenException('Access Denied');
+
+        const refreshTokenMatches = await bcrypt.compareSync(refreshToken, user.refreshToken);
+
+        if (!refreshTokenMatches)
+            throw new ForbiddenException('Access Denied');
+
+        const tokens = await this.getTokens(user.id, user.email);
+
+        await this.updateRefreshToken(user.id, tokens.refreshToken)
+
+        return tokens
+
+    }
+
 }

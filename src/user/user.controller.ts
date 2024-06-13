@@ -13,8 +13,8 @@ import {
 import { UserService } from './user.service';
 import { createUserDto, updateUserDto } from './user.dto';
 import { User } from './user.schema';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 
 @Controller('user')
 export class UserController {
@@ -28,7 +28,7 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get()
   async getAllUsers() {
     return this.userService.getAllUsers();
@@ -44,6 +44,7 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
