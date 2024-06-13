@@ -12,22 +12,12 @@ export class createUserDto {
 
     @IsNotEmpty()
     password: string;
+
+    @IsOptional()
+    refreshToken?: string;
 }
 
-export class updateUserDto {
-
-    @IsOptional()
-    @IsString()
-    name: string
-
-    @IsEmail()
-    @IsOptional()
-    email: string;
-
-    @IsString()
-    @IsOptional()
-    password: string;
-}
+export type updateUserDto = Partial<createUserDto>;
 
 export class SignInUserDto {
 

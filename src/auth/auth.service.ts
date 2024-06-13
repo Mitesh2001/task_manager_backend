@@ -1,15 +1,40 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+import { User } from 'src/user/user.schema';
+import { createUserDto } from 'src/user/user.dto';
 
 @Injectable()
 export class AuthService {
 
     constructor(
         private userService: UserService,
-        private JwtService: JwtService
+        private JwtService: JwtService,
+        private configService: ConfigService
     ) { }
+
+    signUp = async (createUserDto: createUserDto) => {
+
+        const user = await this.userService.findByEmail(createUserDto.email);
+
+        if (user) throw new BadRequestException("User already exists");
+
+        const hashedPassword = await bcrypt.hashSync(createUserDto.password, 10);
+
+        const newUser = await this.userService.createUser({
+            ...createUserDto,
+            password: hashedPassword,
+        });
+
+        const tokens = await this.getTokens(newUser.id, newUser.email);
+
+        await this.updateRefreshToken(newUser.id, tokens.refreshToken)
+
+        return tokens
+
+    }
 
     signIn = async (email: string, pass: string): Promise<any> => {
 
@@ -23,11 +48,43 @@ export class AuthService {
             throw new UnauthorizedException();
         }
 
-        const payload = { id: user.id, email: user.email }
+        const tokens = await this.getTokens(user.id, user.email);
 
-        return {
-            access_token: await this.JwtService.signAsync(payload)
-        }
+        await this.updateRefreshToken(user.id, tokens.refreshToken)
+
+        return tokens
+
+    }
+
+    logOut = async (userId: User['id']) => {
+        return await this.userService.update(userId, { refreshToken: null })
+    }
+
+    updateRefreshToken = async (userId: User['id'], refreshToken: User['refreshToken']) => {
+        const hashedToken = await bcrypt.hashSync(refreshToken, 10)
+        await this.userService.update(userId, { refreshToken: hashedToken })
+    }
+
+    getTokens = async (userId: string, email: string) => {
+
+        const [accessToken, refreshToken] = await Promise.all([
+            await this.JwtService.signAsync({
+                sub: userId,
+                email
+            }, {
+                secret: this.configService.get<string>("JWT_ACCESS_SECRET"),
+                expiresIn: "15m"
+            }),
+            await this.JwtService.signAsync({
+                sub: userId,
+                email
+            }, {
+                secret: this.configService.get<string>("JWT_REFRESH_SECRET"),
+                expiresIn: "7d"
+            })
+        ])
+
+        return { accessToken, refreshToken }
 
     }
 
