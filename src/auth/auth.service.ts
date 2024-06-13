@@ -108,4 +108,24 @@ export class AuthService {
 
     }
 
+    getUserByToken = async (token: string) => {
+
+        try {
+
+            const payload = await this.JwtService.verifyAsync(token, {
+                secret: this.configService.get<string>("JWT_ACCESS_SECRET"),
+            });
+
+            const user = await this.userService.findByEmail(payload.email);
+
+            return user;
+
+        } catch (error) {
+
+            throw new UnauthorizedException();
+
+        }
+
+    }
+
 }

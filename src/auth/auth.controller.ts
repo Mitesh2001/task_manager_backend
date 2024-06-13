@@ -37,4 +37,9 @@ export class AuthController {
         this.authService.refreshTokens(userId, refreshToken);
     }
 
+    @Post('verify_token')
+    async getUserByToken(@Body() data: { access_token: string }) {
+        return this.authService.getUserByToken(data.access_token);
+    }
+
 }
