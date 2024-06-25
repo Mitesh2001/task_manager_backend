@@ -6,27 +6,52 @@ import {
   UseGuards,
   Request,
   UnauthorizedException,
+  Param,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { createUserDto } from './user.dto';
+import { createUserDto, updateUserDto } from './user.dto';
 import { User } from './user.schema';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 
 @Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   @Post()
-  async createUser(@Body() createUserDto: createUserDto): Promise<User> {
+  async createUser(@Body() createUserDto: createUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
+  @UseGuards(AccessTokenGuard)
+  @Get()
+  async getAllUsers() {
+    return this.userService.getAllUsers();
+  }
+
+  @Get(':id')
+  async findById(@Param("id") id: User['id']) {
+    return this.userService.findById(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: updateUserDto) {
+    return this.userService.update(id, updateUserDto);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.userService.remove(id);
+  }
+
   @Post('verify_token')
-  async getUserByToken(@Body() data: { access_token: string }): Promise<User> {
+  async getUserByToken(@Body() data: { access_token: string }) {
     try {
       const payload = await this.jwtService.verifyAsync(data.access_token, {
         secret:
@@ -39,14 +64,4 @@ export class UserController {
     }
   }
 
-  @UseGuards(AuthGuard)
-  @Get()
-  async getAllUsers(@Request() request): Promise<User[]> {
-    return this.userService.getAllUsers();
-  }
-
-  @Get('find')
-  async findOne(@Body() { username }: { username: string }): Promise<User> {
-    return this.userService.findByEmail(username);
-  }
 }
