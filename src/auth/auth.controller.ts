@@ -34,7 +34,7 @@ export class AuthController {
     refreshTokens(@Req() req: Request) {
         const userId = req.user['sub'];
         const refreshToken = req.user['refreshToken'];
-        this.authService.refreshTokens(userId, refreshToken);
+        return this.authService.refreshTokens(userId, refreshToken);
     }
 
     @Post('verify_token')
