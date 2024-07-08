@@ -37,9 +37,16 @@ export class AuthController {
         return this.authService.refreshTokens(userId, refreshToken);
     }
 
+    @UseGuards(AccessTokenGuard)
     @Post('verify_token')
-    async getUserByToken(@Body() data: { access_token: string }) {
-        return this.authService.getUserByToken(data.access_token);
+    async getUserByToken(@Req() req: Request) {
+        const accessToken = this.extractTokenFromHeader(req);
+        return this.authService.getUserByToken(accessToken);
+    }
+
+    extractTokenFromHeader = (request: Request): string | undefined => {
+        const [type, token] = request.headers.authorization?.split(' ') ?? [];
+        return type === 'Bearer' ? token : undefined;
     }
 
 }
